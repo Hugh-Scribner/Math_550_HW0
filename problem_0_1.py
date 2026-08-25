@@ -10,6 +10,7 @@ def df(x): # Analytical derivative
 def finiteDiff12(a,b,n): 
     # uses second order centered difference to approximate the derivative
     # inputs: a - start, b - stop, n - number of nodes 
+    # Outputs: x - mesh, df_approx - approximation of first derivative
     x = np.linspace(a, b, n)
     y = f(x)
     df_approx = np.zeros(x.size)
@@ -21,17 +22,41 @@ def finiteDiff12(a,b,n):
             df_approx[i] = (y[i]-y[i-1])/(x[i]-x[i-1]) 
         else: # Use a centered difference every where else
             df_approx[i] = (y[i+1]-y[i-1])/(x[i+1]-x[i-1])
-    return x, df_approx, y
+    return x, df_approx
+
+def rel_error(a, b, n):
+    x, df_approx = finiteDiff12(a,b,n)
+    df_exact = df(x) # get the analytical solution
+    L_2_error = np.linalg.norm(df_exact-df_approx)/np.linalg.norm(df_exact)
+    L_inf_error = np.linalg.norm(df_exact-df_approx,ord=np.inf)/np.linalg.norm(df_exact,ord=np.inf)
+    return L_2_error, L_inf_error
 
 def main():
+    # Part 1
     x_exact = np.linspace(0, 2*np.pi, 1001)
-    dy_exact = df(x_exact)
-    x_approx, df_approx, y = finiteDiff12(0,2*np.pi, 31)
+    dy_exact = df(x_exact) # Calculate the analytical solution
+    x_approx, df_approx = finiteDiff12(0,2*np.pi, 21) # approximate using FD + 21 nodes
 
     plt.rcParams['lines.linewidth'] = 2 # set a wider line width for all plots in this script
-    plt.plot(x_exact, dy_exact)
-    plt.plot(x_approx, df_approx, 'r--')
-    plt.show()
+    plt.figure(1)
+    plt.plot(x_exact, dy_exact, label = "Exact Solution")
+    plt.plot(x_approx, df_approx, 'r--', label = "N=21 FD-Approx")
+    plt.legend()
+    plt.savefig('Images\problem1_1.png')
+
+    # Part 2
+    numtrials = 5
+    meshes = np.floor(np.logspace(1, 5, num_trials))
+    L_2 = np.zeros(num_trials)
+    L_inf = np.zeros(num_trials)
+    for i in range(num_trials):
+        L_2[i], L_inf[i] = rel_error(0, 2*np.pi, meshes(i))
+
+    plt.fig(2)
+    plt.loglog(meshes, L_2, label = "L_2")
+    plt.loglog(meshes, L_inf, label = "L_inf")
+    plt.legend()
+    plt.savefig('Images\problem1_2.png')
 
     return 0
 
