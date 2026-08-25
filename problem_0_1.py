@@ -45,14 +45,14 @@ def main():
     plt.savefig('Images\problem1_1.png')
 
     # Part 2
-    numtrials = 5
-    meshes = np.floor(np.logspace(1, 5, num_trials))
+    num_trials = 16
+    meshes = np.floor(np.logspace(1, 6, num_trials)).astype(int)
     L_2 = np.zeros(num_trials)
     L_inf = np.zeros(num_trials)
     for i in range(num_trials):
-        L_2[i], L_inf[i] = rel_error(0, 2*np.pi, meshes(i))
+        L_2[i], L_inf[i] = rel_error(0, 2*np.pi, meshes[i])
 
-    plt.fig(2)
+    plt.figure(2)
     plt.loglog(meshes, L_2, label = "L_2")
     plt.loglog(meshes, L_inf, label = "L_inf")
     plt.legend()
