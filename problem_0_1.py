@@ -26,10 +26,11 @@ def finiteDiff12(a,b,n):
 def main():
     x_exact = np.linspace(0, 2*np.pi, 1001)
     dy_exact = df(x_exact)
-    x_approx, df_approx, y = finiteDiff12(0,2*np.pi, 201)
+    x_approx, df_approx, y = finiteDiff12(0,2*np.pi, 31)
 
-    plt.plot(x_approx, df_approx)
+    plt.rcParams['lines.linewidth'] = 2 # set a wider line width for all plots in this script
     plt.plot(x_exact, dy_exact)
+    plt.plot(x_approx, df_approx, 'r--')
     plt.show()
 
     return 0
