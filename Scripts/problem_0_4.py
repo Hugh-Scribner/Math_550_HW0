@@ -8,7 +8,7 @@ def u(x,y): # The exact solution
 def f(x,y): # The forcing function
     return -2*np.sin(y)*np.cos(x)
 
-def finiteDifferencePoisson(a, b, n, bc="dirichlet"):
+def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
     if bc == "Neumann":
         print("The script isn't ready to handle Neumann Boundary conditions yet")
         return 0
@@ -17,12 +17,9 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet"):
         x = np.linspace(a, b, n)
         y = np.linspace(a, b, n) # this line in unnecessary but makes my code a bit easier to read
         xx, yy = np.meshgrid(x,y)
-        print(xx)
-        print(yy)
         h = (b-a)/(n-1)
         b_hat_inter = f(xx,yy)
         b_hat = b_hat_inter.reshape((n**2,))
-        print("Defining linear system...")
         for i in range(n):
             for j in range(n):
                 k = n*i+j
@@ -43,17 +40,20 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet"):
                     A[k,k-n] = 1/h**2
                     A[k,k+n] = 1/h**2
 
-    print("Linear system defined")
     # Solve the system
-    print("Solving linear system...")
-    print(b_hat)
     u_approx = np.linalg.solve(A, b_hat)
-    print("Linear system solved")
-    # Reshape outputs so they are good for plotting
 
-    u_approx = u_approx.reshape((n,n))
-    print(u_approx)
+    # Reshape outputs so they are good for plotting
+    if returnGrid:
+        u_approx = u_approx.reshape((n,n))
     return xx, yy, u_approx
+
+def rel_error(a, b, n):
+    xx, yy, f_approx = finiteDifferencePoisson(a,b,n, returnGrid = False)
+    f_exact = f(xx, yy).reshape((n**2,)) # get the analytical solution
+    L_2_error = np.linalg.norm(f_exact-f_approx)/np.linalg.norm(f_exact)
+    L_inf_error = np.linalg.norm(f_exact-f_approx,ord=np.inf)/np.linalg.norm(f_exact,ord=np.inf)
+    return L_2_error, L_inf_error
         
 def main():
     a = 0
@@ -81,7 +81,19 @@ def main():
     ax2.set_ylabel("y")
     ax2.set_title("Exact Solution")
     plt.savefig("Images\\problem4_2.png")
-    plt.show()
+
+    num_trials = 4
+    meshes = np.floor(np.logspace(1, 2, num_trials)).astype(int)
+    L_2 = np.zeros(num_trials)
+    L_inf = np.zeros(num_trials)
+    for i in range(num_trials):
+        L_2[i], L_inf[i] = rel_error(a, b, meshes[i]) #calculate relative errors for increasingly finer meshes.
+
+    plt.figure(3)
+    plt.loglog(meshes, L_2, label = "L_2")
+    plt.loglog(meshes, L_inf, label = "L_inf")
+    plt.legend()
+    plt.savefig('Images\\problem4_3.png')
 
 if __name__ == "__main__":
     main()
