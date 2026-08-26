@@ -16,8 +16,8 @@ def finiteDiffSolver(a,b,num_nodes):
     # Add in the boundary conditions
     A[0,:] = np.concatenate(([1], np.zeros(num_nodes - 1)))
     A[-1,:] = np.concatenate((np.zeros(num_nodes - 1), [1]))
-    b_hat[0] = 0
-    b_hat[-1] = np.sin(5)
+    b_hat[0] = f(a)
+    b_hat[-1] = f(b)
     
     # Solve the ODE
     u_approx = np.linalg.solve(A,b_hat)
@@ -49,12 +49,12 @@ def main():
     plt.savefig("Images\\problem3_1.png")
 
 # Part 2
-    num_trials = 16
+    num_trials = 4
     meshes = np.floor(np.logspace(1, 4, num_trials)).astype(int)
     L_2 = np.zeros(num_trials)
     L_inf = np.zeros(num_trials)
     for i in range(num_trials):
-        L_2[i], L_inf[i] = rel_error(0, 2*np.pi, meshes[i]) #calculate relative errors for increasingly finer meshes.
+        L_2[i], L_inf[i] = rel_error(a, b, meshes[i]) #calculate relative errors for increasingly finer meshes.
 
     plt.figure(2)
     plt.loglog(meshes, L_2, label = "L_2")
