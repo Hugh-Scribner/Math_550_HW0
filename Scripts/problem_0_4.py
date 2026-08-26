@@ -18,18 +18,23 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet"):
         y = np.linspace(a, b, n) # this line in unnecessary but makes my code a bit easier to read
         xx, yy = np.meshgrid(x,y)
         h = (b-a)/(n-1)
-        b_hat = f(xx,yy).reshape((n**2,))
+        b_hat_inter = f(xx,yy)
+        b_hat = b_hat_inter.reshape((n**2,))
+        print(b_hat_inter)
+        print(b_hat)
+        print(xx)
+        print(yy)
         print("Defining linear system...")
         for i in range(n):
             for j in range(n):
                 k = n*i+j
                 # leave A unmodified (we want an identity row) and update b_hat to enforce the boundary condition along the boundaries
                 if i == 0:
-                    b_hat[k] = np.sin(y[j])*np.cos(5)
-                elif j == 0: 
+                    b_hat[k] = np.sin(y[j])
+                elif j == 0:
                     b_hat[k] = 0
                 elif i == n-1:
-                    b_hat[k] = np.sin(y[j])
+                    b_hat[k] = np.sin(y[j])*np.cos(5)
                 elif j == n-1 :
                     b_hat[k] = np.sin(5)*np.cos(x[i])
                 # Finite difference formula everywhere else
@@ -52,23 +57,24 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet"):
 def main():
     a = 0
     b = 5
-    n = 51
+    n = 40
 
     # Get the numerical solution
-    x,y,u_approx = finiteDifferencePoisson(a, b, n)
+    xx,yy,u_approx = finiteDifferencePoisson(a, b, n)
 
     # Get the exact solution
-    u_exact = u(x,y)
+    u_exact = u(xx,yy)
 
     fig1 = plt.figure(1)
     ax1 = plt.axes(projection='3d')
-    ax1.plot_surface(x,y,u_approx)
+    ax1.plot_surface(xx,yy,u_approx)
     plt.savefig("Images\\problem4_1.png")
 
     fig2 = plt.figure(2)
     ax2 = plt.axes(projection='3d')
-    ax2.plot_surface(x,y,u_exact)
+    ax2.plot_surface(xx,yy,u_exact)
     plt.savefig("Images\\problem4_2.png")
+    plt.show()
 
 if __name__ == "__main__":
     main()
