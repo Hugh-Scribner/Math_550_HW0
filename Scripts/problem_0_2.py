@@ -40,7 +40,7 @@ def main():
     plt.plot(x_exact, d2f_exact, label = "Exact Solution")
     plt.plot(x_approx, d2f_approx, 'r--', label = "N=20 FD-Approx")
     plt.legend()
-    plt.savefig('Images\problem2_1.png')
+    plt.savefig('Images\\problem2_1.png')
 
     # Part 2
     num_trials = 16
@@ -54,7 +54,7 @@ def main():
     plt.loglog(meshes, L_2, label = "L_2")
     plt.loglog(meshes, L_inf, label = "L_inf")
     plt.legend()
-    plt.savefig('Images\problem2_2.png')
+    plt.savefig('Images\\problem2_2.png')
 
     return 0
 
