@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy as sp
+import scipy.sparse as sp
 
 def u(x,y): # The exact solution
     return np.sin(y)*np.cos(x)
@@ -11,7 +11,8 @@ def f(x,y): # The forcing function
 def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
     if bc == "neumann":
         # This method uses forward + backward differences to enforce the neumann conditions... this will mean the solution to the PDE will be O(h)
-        A = np.eye(n**2)
+        # The Neumann boundary solver is not intended to be used wtih large matricies.
+        A = sp.lil_array((n**2,n**2))
         h = (b-a)/(n-1)
         x = np.linspace(a-h, b+h, n)
         y = np.linspace(a-h, b+h, n) # this line in unnecessary but makes my code a bit easier to read
@@ -31,23 +32,23 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
                     A[k,k+1] = 1/h
                     b_hat[k] = 0
                 elif i == n-1: # u_y(x,5)=cos5*cosx, backward difference
-                    A[k,k] = 1/h
                     A[k,k-n] = -1/h
+                    A[k,k] = 1/h
                     b_hat[k] = np.cos(5)*np.cos(x[j])
                 elif j == n-1 : #u_x(5,y) = cos5*cosx, backward difference
-                    A[k,k] = 1/h
                     A[k,k-1] = -1/h
+                    A[k,k] = 1/h
                     b_hat[k] = np.cos(y[i])*np.cos(5)
                 # Finite difference formula everywhere else
                 else:
-                    A[k,k] = -4/h**2
-                    A[k,k-1] = 1/h**2
-                    A[k,k+1] = 1/h**2
                     A[k,k-n] = 1/h**2
+                    A[k,k-1] = 1/h**2
+                    A[k,k] = -4/h**2
+                    A[k,k+1] = 1/h**2
                     A[k,k+n] = 1/h**2
-        print(f"the condition number of A is {np.linalg.cond(A)}")
+        print(f"the condition number of A is {np.linalg.cond(A.toarray())}")
     else:
-        A = np.eye(n**2)
+        A = sp.lil_array((n**2,n**2))
         h = (b-a)/(n-1)
         x = np.linspace(a, b, n)
         y = np.linspace(a, b, n) # this line in unnecessary but makes my code a bit easier to read
@@ -59,23 +60,28 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
                 k = n*i+j
                 # leave A unmodified (we want an identity row) and update b_hat to enforce the boundary condition along the boundaries
                 if i == 0: # u(x,0)
+                    A[k,k] = 1
                     b_hat[k] = 0
                 elif j == 0: # u(0,y)
+                    A[k,k] = 1
                     b_hat[k] = np.sin(y[i])
                 elif i == n-1: # u(x,5)
+                    A[k,k] = 1
                     b_hat[k] = np.sin(5)*np.cos(x[j])
                 elif j == n-1 : #u(5,y)
+                    A[k,k] = 1
                     b_hat[k] = np.sin(y[i])*np.cos(5)
                 # Finite difference formula everywhere else
                 else:
-                    A[k,k] = -4/h**2
-                    A[k,k-1] = 1/h**2
-                    A[k,k+1] = 1/h**2
                     A[k,k-n] = 1/h**2
+                    A[k,k-1] = 1/h**2
+                    A[k,k]   = -4/h**2
+                    A[k,k+1] = 1/h**2
                     A[k,k+n] = 1/h**2
 
     # Solve the system
-    u_approx = np.linalg.solve(A, b_hat)
+    A.tocsr()
+    u_approx = sp.linalg.spsolve(A, b_hat)
 
     # Reshape outputs so they are good for plotting
     if returnGrid:
@@ -116,8 +122,8 @@ def main():
     ax2.set_title("Exact Solution")
     plt.savefig("Images\\problem4_2.png")
 
-    num_trials = 4
-    meshes = np.floor(np.logspace(1, 2, num_trials)).astype(int)
+    num_trials = 5
+    meshes = np.floor(np.logspace(1, 5, num_trials)).astype(int)
     L_2 = np.zeros(num_trials)
     L_inf = np.zeros(num_trials)
     for i in range(num_trials):
@@ -131,7 +137,7 @@ def main():
 
     xx,yy,u_neumann = finiteDifferencePoisson(a, b, n, bc="neumann") # the condition number of A is 1.174812990360801e+17 for one n=40
 
-    fig3 = plt.figure(4)
+    fig4 = plt.figure(4)
     ax4 = plt.axes(projection='3d')
     ax4.plot_surface(xx,yy,u_neumann)
     ax4.set_xlabel("x")
