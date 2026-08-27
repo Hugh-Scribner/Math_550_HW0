@@ -55,6 +55,7 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
         xx, yy = np.meshgrid(x,y)
         b_hat_inter = f(xx,yy)
         b_hat = b_hat_inter.reshape((n**2,))
+        print("Defining Linear System...")
         for i in range(n):
             for j in range(n):
                 k = n*i+j
@@ -80,9 +81,9 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
                     A[k,k+n] = 1/h**2
 
     # Solve the system
-    A.tocsr()
-    u_approx = sp.linalg.spsolve(A, b_hat)
-
+    print("Linear System Defined, Solving...")
+    u_approx = sp.linalg.spsolve(A.tocsr(), b_hat)
+    print("Solution Found")
     # Reshape outputs so they are good for plotting
     if returnGrid:
         u_approx = u_approx.reshape((n,n))
@@ -127,6 +128,7 @@ def main():
     L_2 = np.zeros(num_trials)
     L_inf = np.zeros(num_trials)
     for i in range(num_trials):
+        print(f"Simulating mesh with {meshes[i]**2} nodes")
         L_2[i], L_inf[i] = rel_error(a, b, meshes[i]) #calculate relative errors for increasingly finer meshes.
 
     plt.figure(3)
