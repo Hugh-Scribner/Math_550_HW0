@@ -9,15 +9,49 @@ def f(x,y): # The forcing function
     return -2*np.sin(y)*np.cos(x)
 
 def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
-    if bc == "Neumann":
-        print("The script isn't ready to handle Neumann Boundary conditions yet")
-        return 0
+    if bc == "neumann":
+        # This method uses forward + backward differences to enforce the neumann conditions... this will mean the solution to the PDE will be O(h)
+        A = np.eye(n**2)
+        h = (b-a)/(n-1)
+        x = np.linspace(a-h, b+h, n)
+        y = np.linspace(a-h, b+h, n) # this line in unnecessary but makes my code a bit easier to read
+        xx, yy = np.meshgrid(x,y)
+        b_hat_inter = f(xx,yy)
+        b_hat = b_hat_inter.reshape((n**2,))
+        for i in range(n):
+            for j in range(n):
+                k = n*i+j
+                # leave A unmodified (we want an identity row) and update b_hat to enforce the boundary condition along the boundaries
+                if i == 0: # u_y(x,0)=0, forward difference
+                    A[k,k] = -1/h
+                    A[k,k+n] = 1/h
+                    b_hat[k] = 0
+                elif j == 0: # u_x(0,y)=0, forward difference
+                    A[k,k] = -1/h
+                    A[k,k+1] = 1/h
+                    b_hat[k] = 0
+                elif i == n-1: # u_y(x,5)=cos5*cosx, backward difference
+                    A[k,k] = 1/h
+                    A[k,k-n] = -1/h
+                    b_hat[k] = np.cos(5)*np.cos(x[j])
+                elif j == n-1 : #u_x(5,y) = cos5*cosx, backward difference
+                    A[k,k] = 1/h
+                    A[k,k-1] = -1/h
+                    b_hat[k] = np.cos(y[i])*np.cos(5)
+                # Finite difference formula everywhere else
+                else:
+                    A[k,k] = -4/h**2
+                    A[k,k-1] = 1/h**2
+                    A[k,k+1] = 1/h**2
+                    A[k,k-n] = 1/h**2
+                    A[k,k+n] = 1/h**2
+        print(f"the condition number of A is {np.linalg.cond(A)}")
     else:
         A = np.eye(n**2)
+        h = (b-a)/(n-1)
         x = np.linspace(a, b, n)
         y = np.linspace(a, b, n) # this line in unnecessary but makes my code a bit easier to read
         xx, yy = np.meshgrid(x,y)
-        h = (b-a)/(n-1)
         b_hat_inter = f(xx,yy)
         b_hat = b_hat_inter.reshape((n**2,))
         for i in range(n):
@@ -94,6 +128,17 @@ def main():
     plt.loglog(meshes, L_inf, label = "L_inf")
     plt.legend()
     plt.savefig('Images\\problem4_3.png')
+
+    xx,yy,u_neumann = finiteDifferencePoisson(a, b, n, bc="neumann") # the condition number of A is 1.174812990360801e+17 for one n=40
+
+    fig3 = plt.figure(4)
+    ax4 = plt.axes(projection='3d')
+    ax4.plot_surface(xx,yy,u_neumann)
+    ax4.set_xlabel("x")
+    ax4.set_ylabel("y")
+    ax4.set_title("Neummann Numerical Solution")
+    plt.savefig("Images\\problem4_4.png")
+
 
 if __name__ == "__main__":
     main()
