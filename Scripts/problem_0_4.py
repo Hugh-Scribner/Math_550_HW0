@@ -124,7 +124,7 @@ def main():
     plt.savefig("Images\\problem4_2.png")
 
     num_trials = 5
-    meshes = np.floor(np.logspace(1, 5, num_trials)).astype(int)
+    meshes = np.floor(np.logspace(1, 3, num_trials)).astype(int)
     L_2 = np.zeros(num_trials)
     L_inf = np.zeros(num_trials)
     for i in range(num_trials):
