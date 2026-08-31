@@ -8,7 +8,7 @@ def u(x,y): # The exact solution
 def f(x,y): # The forcing function
     return -2*np.sin(y)*np.cos(x)
 
-def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
+def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True, spy=False, plot_name = "spy_plot.png", verbose=False):
     if bc == "neumann":
         # This method uses forward + backward differences to enforce the neumann conditions... this will mean the solution to the PDE will be O(h)
         # The Neumann boundary solver is not intended to be used wtih large matricies.
@@ -46,7 +46,8 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
                     A[k,k] = -4/h**2
                     A[k,k+1] = 1/h**2
                     A[k,k+n] = 1/h**2
-        print(f"the condition number of A is {np.linalg.cond(A.toarray())}")
+        if verbose:
+            print(f"the condition number of A is {np.linalg.cond(A.toarray())}")
     else:
         A = sp.lil_array((n**2,n**2))
         h = (b-a)/(n-1)
@@ -55,7 +56,8 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
         xx, yy = np.meshgrid(x,y)
         b_hat_inter = f(xx,yy)
         b_hat = b_hat_inter.reshape((n**2,))
-        print("Defining Linear System...")
+        if verbose:
+            print("Defining Linear System...")
         for i in range(n):
             for j in range(n):
                 k = n*i+j
@@ -81,16 +83,21 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True):
                     A[k,k+n] = 1/h**2
 
     # Solve the system
-    print("Linear System Defined, Solving...")
-    u_approx = sp.linalg.spsolve(A.tocsr(), b_hat)
-    print("Solution Found")
+    if verbose:
+        print("Linear System Defined, Solving...")
+    u_approx = sp.linalg.spsolve(A.tocsc(), b_hat)
+    if verbose:
+        print("Solution Found")
     # Reshape outputs so they are good for plotting
+    if spy:
+        plt.spy(A)
+        plt.savefig(plot_name)
     if returnGrid:
         u_approx = u_approx.reshape((n,n))
     return xx, yy, u_approx
 
 def rel_error(a, b, n):
-    xx, yy, f_approx = finiteDifferencePoisson(a,b,n, returnGrid = False)
+    xx, yy, f_approx = finiteDifferencePoisson(a,b,n, returnGrid = False, verbose=True)
     f_exact = f(xx, yy).reshape((n**2,)) # get the analytical solution
     L_2_error = np.linalg.norm(f_exact-f_approx)/np.linalg.norm(f_exact)
     L_inf_error = np.linalg.norm(f_exact-f_approx,ord=np.inf)/np.linalg.norm(f_exact,ord=np.inf)
@@ -99,10 +106,10 @@ def rel_error(a, b, n):
 def main():
     a = 0
     b = 5
-    n = 40
+    n = 20
 
     # Get the numerical solution
-    xx,yy,u_approx = finiteDifferencePoisson(a, b, n)
+    xx,yy,u_approx = finiteDifferencePoisson(a, b, n, spy=True, plot_name = "Images\\problem4_spy.png")
 
     # Get the exact solution
     u_exact = u(xx,yy)
@@ -123,17 +130,28 @@ def main():
     ax2.set_title("Exact Solution")
     plt.savefig("Images\\problem4_2.png")
 
+    erplt = plt.figure(6)
+    erax = plt.axes(projection='3d')
+    erax.plot_surface(xx,yy,np.abs(u_approx-u_exact))
+    erax.set_xlabel("x")
+    erax.set_ylabel("y")
+    erax.set_title("absolute error")
+    plt.savefig("Images\\problem4_error.png")
+
     num_trials = 8
-    meshes = np.floor(np.logspace(1, 4, num_trials)).astype(int)
+    meshes = np.floor(np.logspace(1, 2, num_trials)).astype(int)
     L_2 = np.zeros(num_trials)
     L_inf = np.zeros(num_trials)
     for i in range(num_trials):
         print(f"Simulating mesh with {meshes[i]**2} nodes")
         L_2[i], L_inf[i] = rel_error(a, b, meshes[i]) #calculate relative errors for increasingly finer meshes.
 
-    plt.figure(3)
-    plt.loglog(meshes, L_2, label = "L_2")
-    plt.loglog(meshes, L_inf, label = "L_inf")
+    fig3 = plt.figure(3)
+    ax3 = plt.axes()
+    plt.plot(meshes, L_2, label = "L_2")
+#    plt.loglog(meshes, L_inf, label = "L_inf")
+    ax3.set_xscale('log')
+    ax3.set_yscale('log')
     plt.legend()
     plt.savefig('Images\\problem4_3.png')
 
