@@ -123,8 +123,8 @@ def main():
     ax2.set_title("Exact Solution")
     plt.savefig("Images\\problem4_2.png")
 
-    num_trials = 5
-    meshes = np.floor(np.logspace(1, 3, num_trials)).astype(int)
+    num_trials = 8
+    meshes = np.floor(np.logspace(1, 4, num_trials)).astype(int)
     L_2 = np.zeros(num_trials)
     L_inf = np.zeros(num_trials)
     for i in range(num_trials):
@@ -146,7 +146,6 @@ def main():
     ax4.set_ylabel("y")
     ax4.set_title("Neummann Numerical Solution")
     plt.savefig("Images\\problem4_4.png")
-
 
 if __name__ == "__main__":
     main()
