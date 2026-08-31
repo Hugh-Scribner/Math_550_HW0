@@ -106,7 +106,7 @@ def rel_error(a, b, n):
 def main():
     a = 0
     b = 5
-    n = 5
+    n = 512
 
     # Get the numerical solution
     xx,yy,u_approx = finiteDifferencePoisson(a, b, n, spy=True, plot_name = "Images\\problem4_spy.png")
@@ -130,6 +130,7 @@ def main():
     ax2.set_title("Exact Solution")
     plt.savefig("Images\\problem4_2.png")
 
+    # Plot the error for trouble shooting
     erplt = plt.figure(6)
     erax = plt.axes(projection='3d')
     erax.plot_surface(xx,yy,np.abs(u_approx-u_exact))
@@ -148,10 +149,11 @@ def main():
 
     fig3 = plt.figure(3)
     ax3 = plt.axes()
-    plt.plot(meshes, L_2, label = "L_2")
-#    plt.loglog(meshes, L_inf, label = "L_inf")
-    ax3.set_xscale('log')
-    ax3.set_yscale('log')
+#   plt.plot(meshes, L_2, label = "L_2")
+    plt.loglog(meshes, L_2, label = "L_2")
+#   plt.loglog(meshes, L_inf, label = "L_inf")
+#   ax3.set_xscale('log')
+#   ax3.set_yscale('log')
     plt.legend()
     plt.savefig('Images\\problem4_3.png')
 
