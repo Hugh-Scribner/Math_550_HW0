@@ -106,7 +106,7 @@ def rel_error(a, b, n):
 def main():
     a = 0
     b = 5
-    n = 20
+    n = 5
 
     # Get the numerical solution
     xx,yy,u_approx = finiteDifferencePoisson(a, b, n, spy=True, plot_name = "Images\\problem4_spy.png")
