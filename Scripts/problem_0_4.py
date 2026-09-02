@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.sparse as sp
+import sys
 
 def u(x,y): # The exact solution
     return np.sin(y)*np.cos(x)
@@ -55,7 +56,7 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True, spy=Fals
         y = np.linspace(a, b, n) # this line in unnecessary but makes my code a bit easier to read
         xx, yy = np.meshgrid(x,y)
         b_hat_inter = f(xx,yy)
-        b_hat = b_hat_inter.reshape((n**2,))
+        b_hat = b_hat_inter.flatten()
         if verbose:
             print("Defining Linear System...")
         for i in range(n):
@@ -81,7 +82,6 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True, spy=Fals
                     A[k,k]   = -4/h**2
                     A[k,k+1] = 1/h**2
                     A[k,k+n] = 1/h**2
-
     # Solve the system
     if verbose:
         print("Linear System Defined, Solving...")
@@ -90,33 +90,38 @@ def finiteDifferencePoisson(a, b, n, bc="dirichlet", returnGrid = True, spy=Fals
         print("Solution Found")
     # Reshape outputs so they are good for plotting
     if spy:
+        plt.figure()
         plt.spy(A)
         plt.savefig(plot_name)
+        # print(f"h = {h}")
+        # print(A.toarray())
     if returnGrid:
         u_approx = u_approx.reshape((n,n))
     return xx, yy, u_approx
 
 def rel_error(a, b, n):
-    xx, yy, f_approx = finiteDifferencePoisson(a,b,n, returnGrid = False, verbose=True)
-    f_exact = f(xx, yy).reshape((n**2,)) # get the analytical solution
-    L_2_error = np.linalg.norm(f_exact-f_approx)/np.linalg.norm(f_exact)
-    L_inf_error = np.linalg.norm(f_exact-f_approx,ord=np.inf)/np.linalg.norm(f_exact,ord=np.inf)
+    xx, yy, u_approx = finiteDifferencePoisson(a,b,n, returnGrid = False, verbose=True)
+    u_exact = u(xx, yy).flatten() # get the analytical solution
+    #L_2_error = np.sqrt(((u_exact-u_approx)**2).sum())/np.sqrt(((u_exact)**2).sum())
+    L_2_error = np.linalg.norm(u_exact-u_approx)/np.linalg.norm(u_exact)
+    L_inf_error = np.linalg.norm(u_exact-u_approx,ord=np.inf)/np.linalg.norm(u_exact,ord=np.inf)
     return L_2_error, L_inf_error
         
 def main():
     a = 0
     b = 5
-    n = 512
+    n = 40
+    colormap = 'inferno'
 
     # Get the numerical solution
-    xx,yy,u_approx = finiteDifferencePoisson(a, b, n, spy=True, plot_name = "Images\\problem4_spy.png")
+    xx,yy,u_approx = finiteDifferencePoisson(a, b, n) #, spy=True, plot_name = "Images\\problem4_spy.png")
 
     # Get the exact solution
     u_exact = u(xx,yy)
 
     fig1 = plt.figure(1)
     ax1 = plt.axes(projection='3d')
-    ax1.plot_surface(xx,yy,u_approx)
+    ax1.plot_surface(xx,yy,u_approx,cmap=colormap)
     ax1.set_xlabel("x")
     ax1.set_ylabel("y")
     ax1.set_title("Numerical Solution")
@@ -124,23 +129,23 @@ def main():
 
     fig2 = plt.figure(2)
     ax2 = plt.axes(projection='3d')
-    ax2.plot_surface(xx,yy,u_exact)
+    ax2.plot_surface(xx,yy,u_exact,cmap=colormap)
     ax2.set_xlabel("x")
     ax2.set_ylabel("y")
     ax2.set_title("Exact Solution")
     plt.savefig("Images\\problem4_2.png")
 
     # Plot the error for trouble shooting
-    erplt = plt.figure(6)
+    erplt = plt.figure(5)
     erax = plt.axes(projection='3d')
-    erax.plot_surface(xx,yy,np.abs(u_approx-u_exact))
+    erax.plot_surface(xx,yy,np.abs(u_approx-u_exact),cmap=colormap)
     erax.set_xlabel("x")
     erax.set_ylabel("y")
     erax.set_title("absolute error")
     plt.savefig("Images\\problem4_error.png")
 
     num_trials = 8
-    meshes = np.floor(np.logspace(1, 2, num_trials)).astype(int)
+    meshes = np.floor(np.logspace(1, 3, num_trials)).astype(int)
     L_2 = np.zeros(num_trials)
     L_inf = np.zeros(num_trials)
     for i in range(num_trials):
@@ -151,7 +156,7 @@ def main():
     ax3 = plt.axes()
 #   plt.plot(meshes, L_2, label = "L_2")
     plt.loglog(meshes, L_2, label = "L_2")
-#   plt.loglog(meshes, L_inf, label = "L_inf")
+    plt.loglog(meshes, L_inf, label = "L_inf")
 #   ax3.set_xscale('log')
 #   ax3.set_yscale('log')
     plt.legend()
@@ -161,7 +166,7 @@ def main():
 
     fig4 = plt.figure(4)
     ax4 = plt.axes(projection='3d')
-    ax4.plot_surface(xx,yy,u_neumann)
+    ax4.plot_surface(xx,yy,u_neumann,cmap=colormap)
     ax4.set_xlabel("x")
     ax4.set_ylabel("y")
     ax4.set_title("Neummann Numerical Solution")
