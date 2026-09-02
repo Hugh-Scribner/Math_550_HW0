@@ -17,6 +17,7 @@
 \usepackage{abstract}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{tcolorbox}
 
 \begin{document}
 
@@ -49,7 +50,59 @@
 \tableofcontents
 
 \newpage
-
 \section{Problem 1}
+ \begin{tcolorbox}
+        \textbf{Problem Statement:}\\
+        Write a matlab code that uses finite differences to compute
+        the first derivative of
+        \[f(x) = \text{exp(sin(x))}\]
+        on the internal [0,$2\pi$]. se second-order centered differences on internal grid points and first-order one-sided differences at endpoints.
+    \begin{enumerate}
+        \item Show a graph of the exact analytic solution $f'(x)$ and your numerical solution $f_n'(x)$.
+        \item Show a relative error convergence plot by plotting the relative error on the y-axis and the
+        grid size N on the x-axis. Plot the error using both the $p = \infty, 2$ norms in a log-log scale.
+        \item We see a curve with a slope 3/2, why?
+    \end{enumerate}
+        
+    \end{tcolorbox}
+    
+    \textbf{Solution:}
+
+\newpage
+\section{Problem 2}
+ \begin{tcolorbox}
+        \textbf{Problem Statement:}\\
+        Repeat problem 1 but compute the second derivative
+        f''(x). Assume periodicity and wrap around the grid instead of using one-sided finite differences.
+    \end{tcolorbox}
+    
+    \textbf{Solution:}
+
+\newpage
+\section{Problem 3}
+ \begin{tcolorbox}
+        \textbf{Problem Statement:}\\
+        Consider the ODE
+        \[
+        \frac{d^2u}{dx^2} + sin(x)\frac{du}{dx} + u(x) = f(x)
+        \]
+        defined on $0 \leq x \leq 5$. Solve the ODE using second-order finite difference methods with the Dirichlet conditions. Use $u(x) = sin(x)$ to test your solution by finding boundary conditions and the necessary forcing function $f(x)$. Show an error plot that proves your method converges with second order.
+        
+    \end{tcolorbox}
+    
+    \textbf{Solution:}
+
+\newpage
+\section{Problem 4}
+ \begin{tcolorbox}
+        \textbf{Problem Statement:}\\
+        Use finite difference methods to solve the Poisson equation $\nabla^2u = f (x, y)$ in the domain $x \in [0, 5],\ y \in [0, 5]$. Use the test solution $u(x, y) = sin(x) cos(y)$
+        \begin{enumerate}
+            \item pply Dirichlet conditions on all boundaries so that $u(x, y)$ satisfies the PDE and the boundary conditions, and show a plot of your solution and a second order convergence plot (similar to the first three problems).
+            \item Modify your code to apply Neumann conditions on all boundaries. This won’t work. Why not? – both in terms of the linear algebra and in terms of the actual PDE we want to solve. Suggest a solution to the issue.
+        \end{enumerate}
+            \end{tcolorbox}
+    
+    \textbf{Solution:}
 
 \end{document}
