@@ -68,22 +68,25 @@
     
     \textbf{Solution:}
         \begin{enumerate}
-            \item 
+            \item A Finite difference approximation of the first derivative of $f(x) = \text{exp(sin}(x))$ was taking using N = 21. The results are shown in figure \ref{fig:finite_diff_1} below.
                 \begin{figure}[H]
                     \begin{centering}
                     \centering
                         \includegraphics[scale=.75]{Images/problem1_1.png}
-                        \caption{numerical approximation}
+                        \caption{Finite difference approximation (N=21) of first derivative of $f(x) = \text{exp(sin}x))$. The exact solution is shown in blue and the numerical solution is shown in red.}
+                        \label{fig:finite_diff_1}
                     \end{centering}
                 \end{figure}
-            \item
+            \item To demonstrate the convergence of the finite difference model, a convergence plot is provided in figure\ref{fig:convergence_1}. Notice that the curve for the $L_2$ norm (shown in blue) shows a slope of -3/2, while the $L_\infty$ norm yields a curve with a slope of -1. The slope of -1 for $L^\infty$ is expected, as the forward differences used for the endpoints of the numerical approximation have an error that is $O(h)$, where $h$ represents the distance between nodes. However, the slope of -3/2 for the $L^2$ error is unexpected. This is discussed in part (c).
                 \begin{figure}[H]
                     \begin{centering}
                     \centering
                         \includegraphics[scale=.75]{Images/problem1_2.png}
-                        \caption{numerical approximation}
+                        \caption{Convergence plot with $L^2$ and $L^\infty$ norms of absolute error for finite difference approximation shown in figure 1.}
+                        \label{fig:convergence_1}
                     \end{centering}
                 \end{figure}
+            \item I have no idea right now other than some averaging thing is happening.
         \end{enumerate}
 
 \newpage
@@ -96,20 +99,23 @@
     
     \textbf{Solution:}
     \begin{enumerate}
-        \item
+        \item A Finite difference approximation of the first derivative of f (x) = exp(sin(x)) was
+        taking using N = 21. The results are shown in figure \ref{fig:2_solution} below.
             \begin{figure}[H]
                     \begin{centering}
                     \centering
                         \includegraphics[scale=.75]{Images/problem2_1.png}
-                        \caption{numerical approximation}
+                        \caption{Finite difference approximation (N=20) of second derivative of $f(x) = \text{exp(sin}x))$. The exact solution is shown in blue and the numerical solution is shown in red.}
+                        \label{fig:2_solution}
                     \end{centering}
                 \end{figure}
-        \item
+        \item Figure \ref{fig:2_error} below shows the $L^2$ error for the finite difference approximation of the second derivative of $f$. This curve has a slope of -2, which is in line with the second order convergence of the centered difference formula.
             \begin{figure}[H]
                     \begin{centering}
                     \centering
                         \includegraphics[scale=.75]{Images/problem2_2.png}
-                    \caption{numerical approximation}
+                    \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation shown in figure \ref{fig:2_solution}.}
+                    \label{fig:2_error}
                 \end{centering}
             \end{figure}
     \end{enumerate}
@@ -119,26 +125,38 @@
  \begin{tcolorbox}
         \textbf{Problem Statement:}\\
         Consider the ODE
-        \[
-        \frac{d^2u}{dx^2} + sin(x)\frac{du}{dx} + u(x) = f(x)
-        \]
+        \begin{equation}
+            \frac{d^2u}{dx^2} + sin(x)\frac{du}{dx} + u(x) = f(x)
+            \label{eqn: prob 3}
+        \end{equation}
         defined on $0 \leq x \leq 5$. Solve the ODE using second-order finite difference methods with the Dirichlet conditions. Use $u(x) = sin(x)$ to test your solution by finding boundary conditions and the necessary forcing function $f(x)$. Show an error plot that proves your method converges with second order.
         
     \end{tcolorbox}
     
     \textbf{Solution:}
-        \begin{figure}[H]
-                    \begin{centering}
+        Applying finite differences to equation \ref{eqn: prob 3} we can rewrite the problem as
+
+        \begin{equation}
+            u_{i+1}\left( \frac{1}{h^2} + \frac{\sin(x_i)}{h}\right) + u_i \left( 1 - \frac{1}{h^2}\right) + u_{i-1}\left( \frac{1}{h^2} - \frac{\sin(x_i)}{h}\right) = \sin(x_i)\cos(x_i),
+            \label{eqn: finite_diff_ode}
+        \end{equation}
+
+        where $x_i, u_i$ denote the values of x and u at the ith node of the finite difference mesh. $u_0$ and $u_n$ are held at the appropriate boundary values. Solving the system defined by equation \ref{eqn: prob 3} for n = 50 gives the result shown in \ref{fig:sol_3}.
+        \begin{figure}[H] 
+                \begin{centering}
                     \centering
                         \includegraphics[scale=.75]{Images/problem3_1.png}
-                        \caption{numerical approximation}
+                        \caption{Finite difference approximation (n=50) of solution to equation \ref{eqn: prob 3} The exact solution is shown in blue and the numerical solution is shown in red.}
+                        \label{fig:sol_3}
                     \end{centering}
                 \end{figure}
+
+        Plotting the error, it can once again be seen that the finite difference approximation has second order convergence.
         \begin{figure}[H]
-                    \begin{centering}
+                \begin{centering}
                     \centering
                         \includegraphics[scale=.75]{Images/problem3_2.png}
-                        \caption{numerical approximation}
+                        \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation in equation \ref{eqn: finite_diff_ode}.}
                     \end{centering}
                 \end{figure}
 \newpage
@@ -147,11 +165,13 @@
         \textbf{Problem Statement:}\\
         Use finite difference methods to solve the Poisson equation $\nabla^2u = f (x, y)$ in the domain $x \in [0, 5],\ y \in [0, 5]$. Use the test solution $u(x, y) = sin(x) cos(y)$
         \begin{enumerate}
-            \item pply Dirichlet conditions on all boundaries so that $u(x, y)$ satisfies the PDE and the boundary conditions, and show a plot of your solution and a second order convergence plot (similar to the first three problems).
+            \item Apply Dirichlet conditions on all boundaries so that $u(x, y)$ satisfies the PDE and the boundary conditions, and show a plot of your solution and a second order convergence plot (similar to the first three problems).
             \item Modify your code to apply Neumann conditions on all boundaries. This won’t work. Why not? – both in terms of the linear algebra and in terms of the actual PDE we want to solve. Suggest a solution to the issue.
         \end{enumerate}
             \end{tcolorbox}
     
     \textbf{Solution:}
+    
+
 
 \end{document}
