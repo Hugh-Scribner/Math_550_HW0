@@ -172,36 +172,51 @@
     
     \textbf{Solution:}
         \begin{enumerate}
-            \item Using 
+            \item Figure \ref{fig:poisson_sols} below depicts the exact and numerical solutions to the Poisson equation with $f(x) = -2\sin(x)\cos(x)$ for n = 1600. Using the eyeball norm, the solutions are identical.
                 \begin{figure}[H]
                     \begin{centering}
                         \centering
                             \includegraphics[scale=.75]{Images/problem4_1.png}
-                            \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation in equation \ref{eqn: finite_diff_ode}.}
+                            \caption{The above figure depicts the exact and numerical solutions to the Poisson equation.}
+                            \label{fig:poisson_sols}
                     \end{centering}
                 \end{figure}
+                
+            Since the error in the numerical solution is not easily visible by inspection, figure \ref{fig: prob_4_error} provides an error plot.
                 \begin{figure}[H]
                     \begin{centering}
                         \centering
                             \includegraphics[scale=.75]{Images/problem4_2.png}
-                            \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation in equation \ref{eqn: finite_diff_ode}.}
+                            \caption{The figure above depicts the error in the FD approximation to the solution of the Poisson Equation.}
+                            \label{fig: prob_4_error}
                     \end{centering}
                 \end{figure}
                 \begin{figure}[H]
                     \begin{centering}
                         \centering
                             \includegraphics[scale=.75]{Images/problem4_3.png}
-                            \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation in equation \ref{eqn: finite_diff_ode}.}
+                            \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation of the Poisson equation.}
+                            \label{fig: Poisson_convergence}
                     \end{centering}
                 \end{figure}
+                Running the numerical simulation for denser and denser meshes, it is found that the finite difference model once again demonstrates second order convergence, as shown in figure \ref{fig: Poisson_convergence}
+            \item
+            Attempting to adapt the FD solver to handle the same problem as above but with Neumann boundary conditions results in the solution shown in figure \ref{\fig: Neumann_bcs}.
                 \begin{figure}[H]
                     \begin{centering}
                         \centering
                             \includegraphics[scale=.75]{Images/problem4_4.png}
                             \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation in equation \ref{eqn: finite_diff_ode}.}
+                            \label{\fig: Neumann_bcs}
                     \end{centering}
                 \end{figure}
-            \item
+
+            As the figure above makes clear, the finite difference solver diverges for these boundary conditions. This is because linear system used to approximate the laplacian operator becomes singular when neumann boundaries are applied. Numpy estimated the condition number of the corresponding A matrix for a 40 by 40 grid to be 1.17e17. This occurs because there are infinite solutions to Poisson's equations when the only specified boundary conditions are Neumann. To address these issues there are two paths forward:
+            \begin{enumerate}
+                \item Gather more data regarding the system being analyzed to impose additional conditions on the solution to narrow the solution space to one answer (This would be the best path forward if you are trying to model a system which you can gather data about).
+                \item Impose an additional constraint on the loss function used to solve the poisson equation to select an "optimal" solution from the solution space (This would be the best fit if you are trying to solve a design problem where multiple solutions are valid).
+            \end{enumerate}
+
         \end{enumerate}
 
 
