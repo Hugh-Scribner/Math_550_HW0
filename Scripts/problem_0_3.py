@@ -43,8 +43,12 @@ def main():
 
     plt.rcParams['lines.linewidth'] = 3 # set a wider line width for all plots in this script
     plt.figure(1)
+    ax = plt.axes()
+    ax.set_xlim(a, b)
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
     plt.plot(x, u_exact, label = "Exact")
-    plt.plot(x, u_approx,'r--', label = "FD-Approx")
+    plt.plot(x, u_approx,'r--', label = "FD-Approx", linewidth=6)
     plt.legend()
     plt.savefig("Images\\problem3_1.png")
 
@@ -57,8 +61,11 @@ def main():
         L_2[i], L_inf[i] = rel_error(a, b, meshes[i]) #calculate relative errors for increasingly finer meshes.
 
     plt.figure(2)
+    ax = plt.axes()
+    ax.set_xlabel("Number of FD Nodes")
+    ax.set_ylabel("Relative Error")
     plt.loglog(meshes, L_2, label = "L_2")
-    plt.loglog(meshes, L_inf, label = "L_inf")
+    #plt.loglog(meshes, L_inf, label = "L_inf")
     plt.legend()
     plt.savefig('Images\\problem3_2.png')
 

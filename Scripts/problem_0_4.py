@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 import scipy.sparse as sp
 import sys
 
@@ -118,31 +119,30 @@ def main():
 
     # Get the exact solution
     u_exact = u(xx,yy)
-
-    fig1 = plt.figure(1)
-    ax1 = plt.axes(projection='3d')
-    ax1.plot_surface(xx,yy,u_approx,cmap=colormap)
-    ax1.set_xlabel("x")
-    ax1.set_ylabel("y")
-    ax1.set_title("Numerical Solution")
-    plt.savefig("Images\\problem4_1.png")
-
-    fig2 = plt.figure(2)
-    ax2 = plt.axes(projection='3d')
-    ax2.plot_surface(xx,yy,u_exact,cmap=colormap)
-    ax2.set_xlabel("x")
-    ax2.set_ylabel("y")
-    ax2.set_title("Exact Solution")
-    plt.savefig("Images\\problem4_2.png")
+    fig1, ax1 = plt.subplots(nrows=1, ncols=2, constrained_layout=True)
+    vmin = min(u_exact.min(), u_approx.min())
+    vmax = max(u_exact.max(), u_approx.max())
+    im0 = ax1[0].pcolormesh(xx, yy, u_exact, cmap=colormap, vmin=vmin, vmax=vmax)
+    im1 = ax1[1].pcolormesh(xx, yy, u_approx, cmap=colormap, vmin=vmin, vmax=vmax)
+    ax1[0].set_title('Exact Solution')
+    ax1[1].set_title('Approx. Solution')
+    for ax in ax1:
+        ax.set_aspect('equal')
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        ax.xaxis.set_major_locator(MultipleLocator(1))
+    fig1.colorbar(im0, ax=ax1, orientation='vertical', fraction=0.046, pad=0.04,  shrink=0.6)
+    plt.savefig("Images\\problem4_1.png", bbox_inches='tight')
 
     # Plot the error for trouble shooting
-    erplt = plt.figure(5)
-    erax = plt.axes(projection='3d')
-    erax.plot_surface(xx,yy,np.abs(u_approx-u_exact),cmap=colormap)
-    erax.set_xlabel("x")
-    erax.set_ylabel("y")
-    erax.set_title("absolute error")
-    plt.savefig("Images\\problem4_error.png")
+    fig2 = plt.figure(2)
+    ax2 = plt.axes()
+    im2 = plt.pcolormesh(xx,yy,np.abs(u_approx-u_exact),cmap=colormap)
+    ax2.set_xlabel("x")
+    ax2.set_ylabel("y")
+    ax2.set_title("absolute error")
+    fig2.colorbar(im2, ax=ax2, orientation='vertical', fraction=0.046, pad=0.04)
+    plt.savefig("Images\\problem4_2.png")
 
     num_trials = 8
     meshes = np.floor(np.logspace(1, 3, num_trials)).astype(int)
@@ -154,12 +154,15 @@ def main():
 
     fig3 = plt.figure(3)
     ax3 = plt.axes()
+    plt.rcParams['lines.linewidth'] = 3 
 #   plt.plot(meshes, L_2, label = "L_2")
     plt.loglog(meshes, L_2, label = "L_2")
-    plt.loglog(meshes, L_inf, label = "L_inf")
+#   plt.loglog(meshes, L_inf, label = "L_inf")
 #   ax3.set_xscale('log')
 #   ax3.set_yscale('log')
     plt.legend()
+    ax3.set_xlabel("Number of FD Nodes")
+    ax3.set_ylabel("Relative Error")
     plt.savefig('Images\\problem4_3.png')
 
     xx,yy,u_neumann = finiteDifferencePoisson(a, b, n, bc="neumann") # the condition number of A is 1.174812990360801e+17 for one n=40
@@ -170,7 +173,8 @@ def main():
     ax4.set_xlabel("x")
     ax4.set_ylabel("y")
     ax4.set_title("Neummann Numerical Solution")
-    plt.savefig("Images\\problem4_4.png")
+    fig4.subplots_adjust(left=0, right=1, bottom=0, top=1)
+    plt.savefig("Images\\problem4_4.png", bbox_inches='tight')
 
 if __name__ == "__main__":
     main()

@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, FuncFormatter
+from fractions import Fraction
 
 def f(x): # the function you want to analyze
     return np.exp(np.sin(x))
@@ -31,30 +33,56 @@ def rel_error(a, b, n):
     L_inf_error = np.linalg.norm(df_exact-df_approx,ord=np.inf)/np.linalg.norm(df_exact,ord=np.inf)
     return L_2_error, L_inf_error
 
+def pi_formatter(val, pos):
+    # Written by Sonnet
+    frac = Fraction(val / np.pi).limit_denominator(10)
+    if frac.numerator == 0:
+        return "0"
+    if frac.denominator == 1:
+        n = frac.numerator
+        return r"$\pi$" if n == 1 else r"$-\pi$" if n == -1 else rf"${n}\pi$"
+    num, den = frac.numerator, frac.denominator
+    if num == 1:
+        return rf"$\pi/{den}$"
+    if num == -1:
+        return rf"$-\pi/{den}$"
+    return rf"${num}\pi/{den}$"
+
 def main():
     # Part 1
-    x_exact = np.linspace(0, 2*np.pi, 1001)
+    a = 0
+    b = 2*np.pi
+    x_exact = np.linspace(a, b, 1001)
     df_exact = df(x_exact) # Calculate the analytical solution
-    x_approx, df_approx = finiteDiff12(0,2*np.pi, 21) # approximate using FD + 21 nodes
+    x_approx, df_approx = finiteDiff12(a, b, 21) # approximate using FD + 21 nodes
 
-    plt.rcParams['lines.linewidth'] = 2 # set a wider line width for all plots in this script
+    plt.rcParams['lines.linewidth'] = 2.5 # set a wider line width for all plots in this script
+    ax = plt.axes()
     plt.figure(1)
     plt.plot(x_exact, df_exact, label = "Exact Solution")
-    plt.plot(x_approx, df_approx, 'r--', label = "N=21 FD-Approx")
+    plt.plot(x_approx, df_approx, 'r--', linewidth = 6, label = "N=21 FD-Approx")
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.xaxis.set_major_locator(MultipleLocator(np.pi/2))
+    ax.xaxis.set_major_formatter(FuncFormatter(pi_formatter))
+    ax.set_xlim(a, b)
     plt.legend()
     plt.savefig('Images\\problem1_1.png')
 
     # Part 2
     num_trials = 16
-    meshes = np.floor(np.logspace(1, 6, num_trials)).astype(int)
+    meshes = np.floor(np.logspace(1, 4, num_trials)).astype(int)
     L_2 = np.zeros(num_trials)
     L_inf = np.zeros(num_trials)
     for i in range(num_trials):
         L_2[i], L_inf[i] = rel_error(0, 2*np.pi, meshes[i])
 
     plt.figure(2)
+    ax = plt.axes()
+    ax.set_xlabel("Number of FD Nodes")
+    ax.set_ylabel("Relative Error")
     plt.loglog(meshes, L_2, label = "L_2")
-    plt.loglog(meshes, L_inf, label = "L_inf")
+    plt.loglog(meshes, L_inf, 'r--', linewidth = 6, label = "L_inf")
     plt.legend()
     plt.savefig('Images\\problem1_2.png')
 
