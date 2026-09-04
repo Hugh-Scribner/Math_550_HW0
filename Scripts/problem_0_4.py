@@ -140,7 +140,7 @@ def main():
     im2 = plt.pcolormesh(xx,yy,np.abs(u_approx-u_exact),cmap=colormap)
     ax2.set_xlabel("x")
     ax2.set_ylabel("y")
-    ax2.set_title("absolute error")
+    ax2.set_title("Absolute Error")
     fig2.colorbar(im2, ax=ax2, orientation='vertical', fraction=0.046, pad=0.04)
     plt.savefig("Images\\problem4_2.png")
 
