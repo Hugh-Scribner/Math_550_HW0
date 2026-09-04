@@ -166,12 +166,43 @@
         Use finite difference methods to solve the Poisson equation $\nabla^2u = f (x, y)$ in the domain $x \in [0, 5],\ y \in [0, 5]$. Use the test solution $u(x, y) = sin(x) cos(y)$
         \begin{enumerate}
             \item Apply Dirichlet conditions on all boundaries so that $u(x, y)$ satisfies the PDE and the boundary conditions, and show a plot of your solution and a second order convergence plot (similar to the first three problems).
-            \item Modify your code to apply Neumann conditions on all boundaries. This won’t work. Why not? – both in terms of the linear algebra and in terms of the actual PDE we want to solve. Suggest a solution to the issue.
+            \item Modify your code to apply Neumann conditions on all boundaries. This won’t work. Why not? Both in terms of the linear algebra and in terms of the actual PDE we want to solve. Suggest a solution to the issue.
         \end{enumerate}
             \end{tcolorbox}
     
     \textbf{Solution:}
-    
+        \begin{enumerate}
+            \item Using 
+                \begin{figure}[H]
+                    \begin{centering}
+                        \centering
+                            \includegraphics[scale=.75]{Images/problem4_1.png}
+                            \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation in equation \ref{eqn: finite_diff_ode}.}
+                    \end{centering}
+                \end{figure}
+                \begin{figure}[H]
+                    \begin{centering}
+                        \centering
+                            \includegraphics[scale=.75]{Images/problem4_2.png}
+                            \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation in equation \ref{eqn: finite_diff_ode}.}
+                    \end{centering}
+                \end{figure}
+                \begin{figure}[H]
+                    \begin{centering}
+                        \centering
+                            \includegraphics[scale=.75]{Images/problem4_3.png}
+                            \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation in equation \ref{eqn: finite_diff_ode}.}
+                    \end{centering}
+                \end{figure}
+                \begin{figure}[H]
+                    \begin{centering}
+                        \centering
+                            \includegraphics[scale=.75]{Images/problem4_4.png}
+                            \caption{Convergence plot with $L^2$ norms of absolute error for finite difference approximation in equation \ref{eqn: finite_diff_ode}.}
+                    \end{centering}
+                \end{figure}
+            \item
+        \end{enumerate}
 
 
 \end{document}
