@@ -86,7 +86,13 @@
                         \label{fig:convergence_1}
                     \end{centering}
                 \end{figure}
-            \item I have no idea right now other than some averaging thing is happening.
+            \item The absolute error for the case where the derivative at the end points is approximated by first order finite differences can be rewritten using asymptotics as follows:
+
+            \[ \frac{\lVert f(x_i) - f_n(x_i)) \rVert_2}{\lVert f(x_i) \rVert_2} = \frac{\sqrt{(\mathcal{O}(h) + \mathcal{O}(n)\mathcal{O}(h^2))^2}}{\sqrt{\mathcal{O}(n)}} = \frac{\mathcal{O}(h)}{\sqrt{\mathcal{O}(n)}}\]
+
+            Now note that $\mathcal{O}(n)$ grows like $\mathcal{O}(h^{-1})$, so error can be further simplified
+
+            \[\frac{\mathcal{O}(h)}{\sqrt{\mathcal{O}(h^{-1})}} = \mathcal{O}(h^{3/2})\]
         \end{enumerate}
 
 \newpage
