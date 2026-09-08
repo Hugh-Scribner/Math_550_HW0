@@ -7,5 +7,5 @@ Images/: This Directory contains .png files of all of the images included in thi
 Wrtieup.tex contains the latex code for generating the PDF writeup for this project. If you need help compiling Latex code, I like https://guides.lib.wayne.edu/latex/compile.
 
 Running this code:
-You should not need to edit any of the parameters in the Scripts Files to reproduce the results outlined in the paper - infact most functions will break if you do modify their parameters, as some values may be assumed within the different submethods in each script. If you do choose to run these scripts, you will need to have SciPy, Numpy, and Matplotlib installed in your environment.
+You should not need to edit any of the parameters in the Scripts Files to reproduce the results outlined in the write up - infact most functions will break if you do modify their parameters, as some values may be assumed within the different submethods in each script. If you do choose to run these scripts, you will need to have SciPy, Numpy, and Matplotlib installed in your environment.
 
