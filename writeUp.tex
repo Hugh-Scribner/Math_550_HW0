@@ -77,7 +77,7 @@
                         \label{fig:finite_diff_1}
                     \end{centering}
                 \end{figure}
-            \item To demonstrate the convergence of the finite difference model, a convergence plot is provided in figure\ref{fig:convergence_1}. Notice that the curve for the $L_2$ norm (shown in blue) shows a slope of -3/2, while the $L_\infty$ norm yields a curve with a slope of -1. The slope of -1 for $L^\infty$ is expected, as the forward differences used for the endpoints of the numerical approximation have an error that is $O(h)$, where $h$ represents the distance between nodes. However, the slope of -3/2 for the $L^2$ error is unexpected. This is discussed in part (c).
+            \item A convergence plot for the FD model is provided in figure\ref{fig:convergence_1}. The plot makes clear that the $L_2$ error is $\mathcal{O(h^{3/2})}$, and the $L_\infty$ error is $\mathcal{O}(h)$.
                 \begin{figure}[H]
                     \begin{centering}
                     \centering
@@ -90,9 +90,9 @@
 
             \[ \frac{\lVert f(x_i) - f_n(x_i)) \rVert_2}{\lVert f(x_i) \rVert_2} = \frac{\sqrt{(\mathcal{O}(h) + \mathcal{O}(n)\mathcal{O}(h^2))^2}}{\sqrt{\mathcal{O}(n)}} = \frac{\mathcal{O}(h)}{\sqrt{\mathcal{O}(n)}}\]
 
-            Now note that $\mathcal{O}(n)$ grows like $\mathcal{O}(h^{-1})$, so error can be further simplified
+            Since $n = \frac{1}{h}$, $\mathcal{O}(n) \propto \mathcal{O}(h^{-1})$, so error can be further simplified as 
 
-            \[\frac{\mathcal{O}(h)}{\sqrt{\mathcal{O}(h^{-1})}} = \mathcal{O}(h^{3/2})\]
+            \[\frac{\mathcal{O}(h)}{\sqrt{\mathcal{O}(h^{-1})}} = \mathcal{O}(h^{3/2}).\]
         \end{enumerate}
 
 \newpage
@@ -105,7 +105,7 @@
     
     \textbf{Solution:}
     \begin{enumerate}
-        \item A Finite difference approximation of the first derivative of f (x) = exp(sin(x)) was
+        \item A Finite difference approximation of the first derivative of $f(x) = \exp(\sin(x))$ was
         taking using N = 21. The results are shown in figure \ref{fig:2_solution} below.
             \begin{figure}[H]
                     \begin{centering}
@@ -217,7 +217,7 @@
                     \end{centering}
                 \end{figure}
 
-            As the figure above makes clear, the finite difference solver diverges for these boundary conditions. This is because linear system used to approximate the laplacian operator becomes singular when neumann boundaries are applied. Numpy estimated the condition number of the corresponding A matrix for a 40 by 40 grid to be 1.17e17. This occurs because there are infinite solutions to Poisson's equations when the only specified boundary conditions are Neumann. To address these issues there are two paths forward:
+            As the figure above makes clear, the finite difference solver diverges for these boundary conditions. This is because linear system used to approximate the laplacian operator becomes singular when neumann boundaries are applied. Numpy estimated the condition number of the corresponding A matrix corresponding with a 40 by 40 grid to be 1.17e17. This occurs because there are infinite solutions to Poisson's equations when the only specified boundary conditions are Neumann. To address these issues there are two paths forward:
             \begin{enumerate}
                 \item Gather more data regarding the system being analyzed to impose additional conditions on the solution to narrow the solution space to one answer (This would be the best path forward if you are trying to model a system which you can gather data about).
                 \item Impose an additional constraint on the loss function used to solve the poisson equation to select an "optimal" solution from the solution space (This would be the best fit if you are trying to solve a design problem where multiple solutions are valid).
